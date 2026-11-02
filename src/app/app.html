@@ -1,0 +1,88 @@
+<header class="top">
+  <h1>Dewarping web viewer</h1>
+  <p>
+    Drag to pan/tilt, scroll or pinch to zoom, double-click to reset. Runs entirely in the browser
+    (WebGL 2).
+  </p>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <h2>Choose your stream</h2>
+    <div class="streams" role="radiogroup" aria-label="Stream">
+      @for (s of streams; track s.id) {
+        <button
+          type="button"
+          class="chip"
+          role="radio"
+          [attr.aria-checked]="selected().id === s.id"
+          [class.on]="selected().id === s.id"
+          [disabled]="!s.url"
+          [attr.title]="s.url ? s.description : 'Stream URL not configured - see demo/streams.ts'"
+          (click)="select(s)"
+        >
+          {{ s.label }}
+        </button>
+      }
+    </div>
+
+    <dewarp-viewer
+      #viewer
+      class="viewer"
+      [source]="selected().url"
+      [sourceType]="selected().type ?? 'auto'"
+      [lens]="lens()"
+      [mount]="mount()"
+      [(mode)]="mode"
+      [(pan)]="pan"
+      [(tilt)]="tilt"
+      [(fov)]="fov"
+      (failed)="error.set($event)"
+      (loaded)="error.set(null)"
+    />
+
+    @if (error(); as e) {
+      <p class="error" role="alert">{{ e.message }}</p>
+    }
+    <p class="hint">{{ selected().description }}</p>
+  </section>
+
+  <aside class="panel" aria-label="Viewer settings">
+    <h2>Camera</h2>
+    <label>
+      Mounting
+      <select [value]="mount()" (change)="onMount($event)">
+        @for (m of mounts; track m) {
+          <option [value]="m" [selected]="m === mount()">{{ m }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Lens field of view: {{ lensFov() }}°
+      <input
+        type="range"
+        min="120"
+        max="220"
+        step="1"
+        [value]="lensFov()"
+        (input)="onLensFov($event)"
+      />
+    </label>
+
+    <h2>View</h2>
+    <dl class="readout">
+      <dt>Mode</dt>
+      <dd>{{ mode() }}</dd>
+      <dt>Pan</dt>
+      <dd>{{ pan().toFixed(1) }}°</dd>
+      <dt>Tilt</dt>
+      <dd>{{ tilt().toFixed(1) }}°</dd>
+      <dt>Zoom (vertical FOV)</dt>
+      <dd>{{ fov().toFixed(1) }}°</dd>
+    </dl>
+    <div class="actions">
+      <button type="button" (click)="viewer.reset()">Reset</button>
+      <button type="button" (click)="snapshot(viewer)">Save snapshot</button>
+    </div>
+  </aside>
+</main>

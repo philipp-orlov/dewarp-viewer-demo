@@ -1,0 +1,96 @@
+<canvas #canvas class="dv-canvas" aria-hidden="true"></canvas>
+<!-- Decoder for URL sources. Kept rendered (1px, clipped) because some browsers stop
+     presenting frames of display:none videos. -->
+<video #video class="dv-video" playsinline muted preload="auto" aria-hidden="true"></video>
+
+@if (unsupported()) {
+  <div class="dv-message" role="alert">
+    This viewer needs WebGL 2, which is not available in this browser.
+  </div>
+} @else if (status() === 'error' && message()) {
+  <div class="dv-message" role="alert">{{ message() }}</div>
+} @else if (status() === 'loading') {
+  <div class="dv-message dv-message-quiet" role="status">Loading…</div>
+}
+
+@if (showControls() && !unsupported()) {
+  <div class="dv-bar" role="toolbar" aria-label="Viewer controls">
+    <div class="dv-group" role="radiogroup" aria-label="View mode">
+      @for (m of modeDefs(); track m.id) {
+        <button
+          type="button"
+          class="dv-btn"
+          role="radio"
+          [class.dv-active]="mode() === m.id"
+          [attr.aria-checked]="mode() === m.id"
+          [attr.aria-label]="m.label"
+          [attr.title]="m.label"
+          (click)="setMode(m.id)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="m.icon" /></svg>
+        </button>
+      }
+    </div>
+    <div class="dv-group">
+      @if (canPlayPause()) {
+        <button
+          type="button"
+          class="dv-btn"
+          [attr.aria-label]="status() === 'playing' ? 'Pause' : 'Play'"
+          [attr.title]="status() === 'playing' ? 'Pause' : 'Play'"
+          (click)="togglePlay()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            @if (status() === 'playing') {
+              <path d="M7 5v14M17 5v14" />
+            } @else {
+              <path d="M8 5l11 7-11 7z" />
+            }
+          </svg>
+        </button>
+      }
+      <button
+        type="button"
+        class="dv-btn"
+        aria-label="Zoom out"
+        title="Zoom out"
+        [disabled]="!zoomable()"
+        (click)="zoom(1.25)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12" /></svg>
+      </button>
+      <button
+        type="button"
+        class="dv-btn"
+        aria-label="Zoom in"
+        title="Zoom in"
+        [disabled]="!zoomable()"
+        (click)="zoom(0.8)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12M12 6v12" /></svg>
+      </button>
+      <button
+        type="button"
+        class="dv-btn"
+        aria-label="Reset view"
+        title="Reset view"
+        (click)="reset()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12a7 7 0 1 0 2.1-5M5 4v4h4" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="dv-btn"
+        [attr.aria-label]="fullscreen() ? 'Exit full screen' : 'Full screen'"
+        [attr.title]="fullscreen() ? 'Exit full screen' : 'Full screen'"
+        (click)="toggleFullscreen()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+        </svg>
+      </button>
+    </div>
+  </div>
+}
