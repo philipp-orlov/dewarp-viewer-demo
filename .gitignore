@@ -46,3 +46,8 @@ Thumbs.db
 # Python
 __pycache__/
 *.pyc
+
+# Local clips: only the synthetic samples are committed
+/public/samples/*
+!/public/samples/fisheye-ceiling.webm
+!/public/samples/fisheye-wall.webm

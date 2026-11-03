@@ -61,6 +61,7 @@ Size it with CSS (`width`, plus `height` or the default `aspect-ratio: 16/9`).
 | `autoplay`, `muted`, `loop` | `true` | For URL video sources. |
 | `crossOrigin` | `'anonymous'` | See the CORS note below. |
 | `maxPixelRatio` | `2` | Caps the drawing-buffer DPR (and total pixels at 4K) to bound GPU cost. |
+| `label` | `'Dewarped wide-angle camera view'` | Accessible name of the canvas. |
 
 Outputs: `loaded` (first frame drawn), `failed` (`{ code, message }`, codes
 `webgl-unavailable | source | cors | hls`).
@@ -79,10 +80,11 @@ component emits `failed` with `code: 'cors'` rather than showing black.
 ## Demo
 
 web-ui-kit is a `file:` dependency on a sibling checkout (`../web-ui-kit`).
-Build it first:
+Build it first (the Angular build builds core too, so core needs its packages):
 
 ```sh
 git clone https://github.com/philipp-orlov/web-ui-kit ../web-ui-kit
+(cd ../web-ui-kit/core && npm install)
 (cd ../web-ui-kit/angular && npm install && npm run build)
 npm install
 npm start          # http://localhost:4200
@@ -117,13 +119,29 @@ models, view maths, source detection) and
 `angular/lib/dewarp-viewer/dewarp-viewer.spec.ts` (the component with a fake
 renderer).
 
+### Streams and your own clips
+
 `src/app/demo/streams.ts` lists the demo streams. Two synthetic fisheye clips
 ship in `public/samples/` (regenerate with `python3 scripts/make-samples.py`;
-needs numpy, Pillow, ffmpeg). Any stream can be tried without a rebuild:
+needs numpy, Pillow, ffmpeg). Any other stream can be tried without a rebuild,
+as an extra "Custom (?src=)" entry in the picker:
 
 ```
 http://localhost:4200/?src=<url>&mount=ceiling&lensFov=180&type=hls
 ```
+
+| Parameter | Default | Values |
+| --- | --- | --- |
+| `src` | | A URL, absolute or relative to the page. |
+| `mount` | `ceiling` | `ceiling`, `wall`, `floor` |
+| `lensFov` | `180` | The lens field of view in degrees. |
+| `type` | sniffed from the URL | `video`, `image`, `hls` |
+
+To play a local file, put it in `public/samples/` (`ng serve` serves it, and
+the build copies it to `samples/`) and open
+`http://localhost:4200/?src=samples/<file>`. Anything in `public/samples/` other
+than the two synthetic clips is ignored by git, so large local clips are not
+committed. Remote URLs need CORS (see above).
 
 ## Design notes
 
