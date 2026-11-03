@@ -90,6 +90,23 @@ npm test           # vitest + jsdom: the page, with a fake renderer
 npm run build
 ```
 
+### One file
+
+```sh
+npm run build:single   # dist/dewarp-demo/single/index.html, and samples/ beside it
+```
+
+Like gscope's and libsql's pages, the demo also builds as one `index.html`
+with its script and styles inside (`scripts/inline.mjs`). The normal build
+splits the script, keeping hls.js a lazy chunk; for the one file the script is
+bundled again with esbuild, splitting off, so hls.js is inside it (about
+745 KiB). The two sample clips are media, not code: they stay files, in
+`samples/` next to the page, and the page refers to them relatively
+(`<base href="./">`), so the folder can be served from any path. Serve it over
+HTTP (`python3 -m http.server -d dist/dewarp-demo/single`, say). Opened from
+`file://` the page runs, but the browser blocks the clips: the viewer loads
+video with CORS (WebGL needs it), and a `file://` page has no origin to allow.
+
 `.npmrc` sets `install-links`, so npm copies the kit in (a linked package would
 bring its own copy of Angular). npm does not copy it again while its version
 stays the same: after rebuilding the kit, run `npm run kit`, which removes the

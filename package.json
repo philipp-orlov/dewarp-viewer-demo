@@ -7,6 +7,7 @@
     "kit": "node -e \"require('fs').rmSync('node_modules/@web-ui-kit',{recursive:true,force:true})\" && npm install",
     "start": "ng serve",
     "build": "ng build",
+    "build:single": "ng build && node scripts/inline.mjs",
     "test": "ng test"
   },
   "dependencies": {
