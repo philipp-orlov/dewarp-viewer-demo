@@ -1,9 +1,10 @@
 {
-  "name": "dewarp-viewer",
+  "name": "dewarp-viewer-demo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "ng": "ng",
+    "kit": "node -e \"require('fs').rmSync('node_modules/@web-ui-kit',{recursive:true,force:true})\" && npm install",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test"
@@ -13,6 +14,8 @@
     "@angular/compiler": "^22.1.0",
     "@angular/core": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
+    "@web-ui-kit/angular": "file:../web-ui-kit/angular/dist",
+    "@web-ui-kit/core": "file:../web-ui-kit/core",
     "hls.js": "^1.5.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

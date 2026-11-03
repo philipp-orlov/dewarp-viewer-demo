@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { downloadBlob } from '@web-ui-kit/core/dom';
+
 import { DEMO_STREAMS, DemoStream } from './demo/streams';
 import {
   DewarpError,
@@ -6,7 +8,7 @@ import {
   DewarpViewer,
   MountPosition,
   ViewMode,
-} from './dewarp-viewer/public-api';
+} from '@web-ui-kit/angular/dewarp-viewer';
 
 /** Optional deep-link overrides: ?src=<url>&mount=wall|ceiling|floor&lensFov=190&type=hls */
 function customStreamFromQuery(): DemoStream | null {
@@ -77,12 +79,8 @@ export class App {
 
   protected async snapshot(viewer: DewarpViewer): Promise<void> {
     const blob = await viewer.snapshot('image/png');
-    if (!blob) return;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `dewarp-${this.mode()}.png`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // The kit's download revokes the object URL only after the browser has
+    // started the download (revoking it at once saved nothing in Firefox/Safari).
+    if (blob) downloadBlob(`dewarp-${this.mode()}.png`, blob);
   }
 }

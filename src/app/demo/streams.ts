@@ -1,4 +1,4 @@
-import { DewarpLens, MountPosition, SourceKind } from '../dewarp-viewer/public-api';
+import { DewarpLens, MountPosition, SourceKind } from '@web-ui-kit/core/dewarp';
 
 export interface DemoStream {
   id: string;
